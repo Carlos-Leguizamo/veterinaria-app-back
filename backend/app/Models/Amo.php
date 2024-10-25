@@ -32,6 +32,6 @@ class Amo extends Model
 
     public function veterinarios()
     {
-        return $this->belongsToMany(Veterinario::class, 'veterinario_usuario');
+        return $this->belongsToMany(Veterinario::class, 'amo_veterinario');
     }
 }

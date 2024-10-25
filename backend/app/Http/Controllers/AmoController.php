@@ -30,6 +30,9 @@ class AmoController extends Controller
             return response()->json($validator->errors(), 422);
         }
 
+
+        $veterinario=$request->user();
+
         $amo = Amo::create([
             'first_name' => $request->first_name,
             'second_name' => $request->second_name,
@@ -43,6 +46,8 @@ class AmoController extends Controller
             'telefono' => $request->telefono,
             'genero' => $request->genero,
         ]);
+
+        $veterinario->amos()->attach($amo->id);
 
         // Crear y retornar el token
         $token = $amo->createToken('Token')->plainTextToken;
