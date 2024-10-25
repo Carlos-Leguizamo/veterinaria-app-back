@@ -13,4 +13,9 @@ class Veterinario extends Model
 
 
     protected $hidden = ['password'];
+
+    public function amos()
+    {
+        return $this->belongsToMany(Amo::class, 'veterinario_usuario');
+    }
 }

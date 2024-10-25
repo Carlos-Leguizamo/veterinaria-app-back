@@ -20,7 +20,7 @@ class VeterinarioController extends Controller
             'password' => 'required|string|min:8',
             'telefono' => 'required|string|max:255',
             'especialidad' => 'required|string|max:255',
-            'tipo_identidad' => 'required|string|in:C.C.,Cédula de extranjería',
+            'tipo_identidad' => 'required|string',
             'numero_identidad' => 'required|string|max:255',
         ]);
 
@@ -58,7 +58,7 @@ class VeterinarioController extends Controller
         // Validar los datos de entrada
         $validator = Validator::make($request->all(), [
             'email' => 'required|string|email|max:255',
-            'password' => 'required|string|min:8',
+            'password' => 'required|string',
         ]);
 
         if ($validator->fails()) {

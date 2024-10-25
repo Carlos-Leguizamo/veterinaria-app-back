@@ -13,7 +13,7 @@ use App\Http\Controllers\ConsultasController;
 
 // Route::post('/login-superuser', [AuthController::class, 'login']);
 Route::post('/veterinario/login', [VeterinarioController::class, 'login']);
-Route::post('/veterinario/register', [VeterinarioController::class, 'register']);
+Route::post('/veterinario/register', [VeterinarioController::class, 'register']) -> name('veterinario.register');
 
 
 
