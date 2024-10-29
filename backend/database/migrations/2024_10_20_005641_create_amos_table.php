@@ -18,8 +18,7 @@ return new class extends Migration
             $table->string('last_name');
             $table->string('second_last_name')->nullable();
             $table->string('email')->unique();
-            $table->string('password');
-            $table->enum('tipo_identidad', ['C.C.', 'Cédula de extranjería']);
+            $table->enum('tipo_identidad', ['C.C', 'Cédula de extranjería']);
             $table->string('numero_identidad');
             $table->string('direccion');
             $table->string('telefono',10)->unique();

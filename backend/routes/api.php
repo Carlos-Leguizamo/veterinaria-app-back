@@ -28,11 +28,11 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Rutas para gestionar Amos
     Route::post('/amos-store', [AmoController::class, 'registro']);
-    Route::post('/amos/login', [AmoController::class, 'login']);
+    // Route::post('/amos/login', [AmoController::class, 'login']);
     Route::get('/amos', [AmoController::class, 'index']);
     Route::get('/amos/{id}', [AmoController::class, 'show']);
-    Route::put('/amos/{id}', [AmoController::class, 'update']);
-    Route::delete('/amos/{id}', [AmoController::class, 'destroy']);
+    Route::put('/amos-update/{id}', [AmoController::class, 'update']);
+    Route::delete('/amos-delete/{id}', [AmoController::class, 'destroy']);
 
     // Rutas para historias clinicas
     Route::get('/historias', [HistoriasController::class, 'index']);

@@ -6,6 +6,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 use App\Models\Amo;
+use Illuminate\Support\Facades\Auth;
+use App\Models\Veterinario;
+use Illuminate\Http\JsonResponse;
 
 class AmoController extends Controller
 {
@@ -18,8 +21,7 @@ class AmoController extends Controller
             'last_name' => 'required|string|max:255',
             'second_last_name' => 'nullable|string|max:255',
             'email' => 'required|string|email|max:255|unique:amos',
-            'password' => 'required|string|min:8',
-            'tipo_identidad' => 'required|string|in:C.C.,Cédula de extranjería',
+            'tipo_identidad' => 'required|string|in:C.C,Cédula de extranjería',
             'numero_identidad' => 'required|string|max:255',
             'direccion' => 'required|string|max:255',
             'telefono' => 'required|string|max:255',
@@ -39,7 +41,6 @@ class AmoController extends Controller
             'last_name' => $request->last_name,
             'second_last_name' => $request->second_last_name,
             'email' => $request->email,
-            'password' => Hash::make($request->password),
             'tipo_identidad' => $request->tipo_identidad,
             'numero_identidad' => $request->numero_identidad,
             'direccion' => $request->direccion,
@@ -60,45 +61,56 @@ class AmoController extends Controller
         ], 201);
     }
 
-    // Método para iniciar sesión
-    public function login(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'email' => 'required|string|email|max:255',
-            'password' => 'required|string|min:8',
-        ]);
+    // // Método para iniciar sesión
+    // public function login(Request $request)
+    // {
+    //     $validator = Validator::make($request->all(), [
+    //         'email' => 'required|string|email|max:255',
+    //         'password' => 'required|string|min:8',
+    //     ]);
 
-        if ($validator->fails()) {
-            return response()->json($validator->errors(), 422);
-        }
+    //     if ($validator->fails()) {
+    //         return response()->json($validator->errors(), 422);
+    //     }
 
-        $amo = Amo::where('email', $request->email)->first();
+    //     $amo = Amo::where('email', $request->email)->first();
 
-        if (!$amo || !Hash::check($request->password, $amo->password)) {
-            return response()->json(['error' => 'Unauthorized'], 401);
-        }
+    //     if (!$amo || !Hash::check($request->password, $amo->password)) {
+    //         return response()->json(['error' => 'Unauthorized'], 401);
+    //     }
 
-        // Crear y retornar el token
-        $token = $amo->createToken('Amo Token')->plainTextToken;
+    //     // Crear y retornar el token
+    //     $token = $amo->createToken('Amo Token')->plainTextToken;
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Amo autenticado correctamente',
-            'data' => $amo,
-            'token' => $token,
-        ], 200);
-    }
+    //     return response()->json([
+    //         'success' => true,
+    //         'message' => 'Amo autenticado correctamente',
+    //         'data' => $amo,
+    //         'token' => $token,
+    //     ], 200);
+    // }
 
     // Método para obtener todos los Amos
-    public function index()
+
+    public function index(): JsonResponse   
     {
-        $amos = Amo::all();
+        // Obtener el veterinario autenticado
+        $veterinario = Auth::user(); // Usa Auth::user() si no tienes guards configurados
+
+        // Verificar si hay un veterinario autenticado
+        if (!$veterinario) {
+            return response()->json(['error' => 'Veterinario no autenticado'], 401);
+        }
+
+        // Obtener los amos relacionados con el veterinario autenticado
+        $amos = $veterinario->amos()->withTimestamps()->get(); // Esto usa la relación definida en el modelo Veterinario
 
         return response()->json([
             'success' => true,
             'data' => $amos,
         ], 200);
     }
+
 
     // Método para obtener un Amo por su ID
     public function show($id)
@@ -130,8 +142,7 @@ class AmoController extends Controller
             'last_name' => 'sometimes|required|string|max:255',
             'second_last_name' => 'sometimes|nullable|string|max:255',
             'email' => 'sometimes|required|string|email|max:255|unique:amos,email,' . $amo->id,
-            'password' => 'sometimes|nullable|string|min:8',
-            'tipo_identidad' => 'sometimes|required|string|in:C.C.,Cédula de extranjería',
+            'tipo_identidad' => 'sometimes|required|string|in:C.C,Cédula de extranjería',
             'numero_identidad' => 'sometimes|required|string|max:255',
             'direccion' => 'sometimes|required|string|max:255',
             'telefono' => 'sometimes|required|string|max:255',

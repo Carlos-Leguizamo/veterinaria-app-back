@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('password');
             $table->string('telefono',10)->unique();
             $table->string('especialidad',100);
-            $table->enum('tipo_identidad', ['C.C.', 'Cédula de extranjería']);
+            $table->enum('tipo_identidad', ['C.C', 'Cédula de extranjería']);
             $table->string('numero_identidad');
             $table->timestamps();
         });
