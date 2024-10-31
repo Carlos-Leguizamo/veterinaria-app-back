@@ -7,8 +7,13 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 use App\Models\Amo;
 use Illuminate\Support\Facades\Auth;
-use App\Models\Veterinario;
 use Illuminate\Http\JsonResponse;
+use Barryvdh\DomPDF\Facade\Pdf;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\Style\Color;
+use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
 
 class AmoController extends Controller
 {
@@ -33,7 +38,7 @@ class AmoController extends Controller
         }
 
 
-        $veterinario=$request->user();
+        $veterinario = $request->user();
 
         $amo = Amo::create([
             'first_name' => $request->first_name,
@@ -61,41 +66,12 @@ class AmoController extends Controller
         ], 201);
     }
 
-    // // Método para iniciar sesión
-    // public function login(Request $request)
-    // {
-    //     $validator = Validator::make($request->all(), [
-    //         'email' => 'required|string|email|max:255',
-    //         'password' => 'required|string|min:8',
-    //     ]);
-
-    //     if ($validator->fails()) {
-    //         return response()->json($validator->errors(), 422);
-    //     }
-
-    //     $amo = Amo::where('email', $request->email)->first();
-
-    //     if (!$amo || !Hash::check($request->password, $amo->password)) {
-    //         return response()->json(['error' => 'Unauthorized'], 401);
-    //     }
-
-    //     // Crear y retornar el token
-    //     $token = $amo->createToken('Amo Token')->plainTextToken;
-
-    //     return response()->json([
-    //         'success' => true,
-    //         'message' => 'Amo autenticado correctamente',
-    //         'data' => $amo,
-    //         'token' => $token,
-    //     ], 200);
-    // }
-
     // Método para obtener todos los Amos
 
-    public function index(): JsonResponse   
+    public function index(): JsonResponse
     {
-        // Obtener el veterinario autenticado
-        $veterinario = Auth::user(); // Usa Auth::user() si no tienes guards configurados
+
+        $veterinario = Auth::user();
 
         // Verificar si hay un veterinario autenticado
         if (!$veterinario) {
@@ -193,5 +169,123 @@ class AmoController extends Controller
             'success' => true,
             'message' => 'Amo eliminado correctamente',
         ], 200);
+    }
+
+    public function generarPdfAmos()
+    {
+
+        $veterinario = Auth::user();
+
+        $amos = $veterinario->amos;
+
+        $pdf = PDF::loadView('reportes.amos', compact('amos', 'veterinario'));
+
+        return $pdf->stream('reporte_amos.pdf');
+    }
+
+    public function generarExcelAmos()
+    {
+        $veterinario = Auth::user();
+
+        $amos = $veterinario->amos;
+
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+
+        $headers = [
+            'Primer Nombre',
+            'Segundo Nombre',
+            'Apellido',
+            'Segundo Apellido',
+            'Email',
+            'Tipo de Identidad',
+            'Número de Identidad',
+            'Dirección',
+            'Teléfono',
+            'Género'
+        ];
+
+        // Agrega los encabezados a la primera fila
+        $sheet->fromArray($headers, NULL, 'A1');
+
+        // Estilos de los encabezados
+        $headerStyle = [
+            'font' => [
+                'bold' => true,
+                'color' => ['argb' => Color::COLOR_WHITE],
+                'size' => 12,
+            ],
+            'fill' => [
+                'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+                'startColor' => ['argb' => 'FF388E3C'],
+            ],
+            'alignment' => [
+                'horizontal' => Alignment::HORIZONTAL_CENTER,
+            ],
+        ];
+
+        // Aplicar estilos a la fila de encabezado
+        $sheet->getStyle('A1:J1')->applyFromArray($headerStyle);
+
+        // Aplicar bordes a la fila de encabezado
+        $sheet->getStyle('A1:J1')
+            ->getBorders()
+            ->getAllBorders()
+            ->setBorderStyle(Border::BORDER_THIN)
+            ->getColor()->setARGB('FF000000');
+
+        // Agrega los datos de los amos
+        $row = 2;
+        foreach ($amos as $amo) {
+            $sheet->fromArray([
+                $amo->first_name,
+                $amo->second_name,
+                $amo->last_name,
+                $amo->second_last_name,
+                $amo->email,
+                $amo->tipo_identidad,
+                $amo->numero_identidad,
+                $amo->direccion,
+                $amo->telefono,
+                $amo->genero,
+            ], NULL, 'A' . $row++);
+
+            // Aplicar bordes a cada fila de datos
+            $sheet->getStyle("A" . ($row - 1) . ":J" . ($row - 1))
+                ->getBorders()
+                ->getAllBorders()
+                ->setBorderStyle(Border::BORDER_THIN)
+                ->getColor()->setARGB('FF000000');
+        }
+
+        // Aplicar bordes a todas las filas de datos
+        $sheet->getStyle('A2:J' . ($row - 1))
+            ->getBorders()
+            ->getAllBorders()
+            ->setBorderStyle(Border::BORDER_THIN)
+            ->getColor()->setARGB('FF000000');
+
+        // Ajustar ancho de las columnas
+        foreach (range('A', 'J') as $columnID) {
+            $sheet->getColumnDimension($columnID)->setAutoSize(true);
+        }
+
+        // Crea un objeto Writer y guarda en memoria
+        $writer = new Xlsx($spreadsheet);
+
+        // Configura la respuesta para descargar el archivo
+        $filename = 'reporte_amos.xlsx';
+        ob_start(); // Inicia el almacenamiento en búfer
+        $writer->save('php://output'); // Guarda el archivo en la salida estándar
+        $excelFile = ob_get_contents(); // Obtiene el contenido del búfer
+        ob_end_clean(); // Limpia el búfer
+
+        return response()->stream(function () use ($excelFile) {
+            echo $excelFile;
+        }, 200, [
+            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+        ]);
     }
 }
