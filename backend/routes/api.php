@@ -18,10 +18,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/amos-store', [AmoController::class, 'registro']);
     Route::get('/amos', [AmoController::class, 'index']);
     Route::get('/amos/{id}', [AmoController::class, 'show']);
-    Route::put('/amos/{id}', [AmoController::class, 'update']);
+    Route::put('/amos-update/{id}', [AmoController::class, 'update']);
     Route::delete('/amos/{id}', [AmoController::class, 'destroy']);
     Route::get('/pdf/amos', [AmoController::class, 'generarPdfAmos']);
-    Route::get('/exportar-amos', [AmoController::class, 'generarExcelAmos'])->name('exportar.amos');
+    Route::get('/excel/amos', [AmoController::class, 'generarExcelAmos'])->name('exportar.amos');
 
     // Rutas para gestionar mascotas
     Route::post('/mascotas-store', [MascotaController::class, 'store']);
