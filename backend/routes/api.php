@@ -19,7 +19,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/amos', [AmoController::class, 'index']);
     Route::get('/amos/{id}', [AmoController::class, 'show']);
     Route::put('/amos-update/{id}', [AmoController::class, 'update']);
-    Route::delete('/amos/{id}', [AmoController::class, 'destroy']);
+    Route::delete('/amos-delete/{id}', [AmoController::class, 'destroy']);
     Route::get('/pdf/amos', [AmoController::class, 'generarPdfAmos']);
     Route::get('/excel/amos', [AmoController::class, 'generarExcelAmos'])->name('exportar.amos');
 
@@ -27,8 +27,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/mascotas-store', [MascotaController::class, 'store']);
     Route::get('/mascotas', [MascotaController::class, 'index']);
     Route::get('/mascotas/{id}', [MascotaController::class, 'show']);
-    Route::put('/mascotas/{id}', [MascotaController::class, 'update']);
-    Route::delete('/mascotas/{id}', [MascotaController::class, 'destroy']);
+    Route::put('/mascotas-update/{id}', [MascotaController::class, 'update']);
+    Route::delete('/mascotas-delete/{id}', [MascotaController::class, 'destroy']);
+    Route::get('/pdf/mascotas', [MascotaController::class, 'generarPdfMascotas']);
 
     // Rutas para historias clinicas
     Route::get('/historias', [HistoriasController::class, 'index']);

@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Mascota;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class MascotaController extends Controller
 {
@@ -39,7 +41,17 @@ class MascotaController extends Controller
     // Método para obtener todas las mascotas
     public function index()
     {
-        $mascotas = Mascota::all();
+        $veterinario = Auth::user(); // O lo que uses para identificar al veterinario
+
+        // Obtener todos los amos creados por este veterinario
+        $amos = $veterinario->amos;
+
+        // Obtener todas las mascotas de los amos
+        $mascotas = [];
+        foreach ($amos as $amo) {
+            $mascotas = array_merge($mascotas, $amo->mascotas->toArray());
+        }
+
 
         return response()->json([
             'success' => true,
@@ -107,5 +119,12 @@ class MascotaController extends Controller
             'success' => true,
             'message' => 'Mascota eliminada correctamente',
         ]);
+    }
+    public function generarPdfMascotas()
+    {
+        $veterinario = Auth::user();
+        $amos = $veterinario->amos;
+        $pdf = PDF::loadView('reportes.mascotas', compact('amos', 'veterinario'));
+        return $pdf->stream('reporte_mascotas.pdf');
     }
 }

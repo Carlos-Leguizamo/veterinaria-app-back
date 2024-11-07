@@ -1,5 +1,7 @@
 <?php
 
+// app/Models/Amo.php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -8,8 +10,7 @@ use Laravel\Sanctum\HasApiTokens;
 
 class Amo extends Model
 {
-    use HasApiTokens,HasFactory;
-
+    use HasApiTokens, HasFactory;
 
     protected $fillable = [
         'first_name',
@@ -25,7 +26,6 @@ class Amo extends Model
         'genero',
     ];
 
-
     protected $hidden = [
         'password',
     ];
@@ -33,5 +33,11 @@ class Amo extends Model
     public function veterinarios()
     {
         return $this->belongsToMany(Veterinario::class, 'amo_veterinario')->withTimestamps();
+    }
+
+    // Definir la relación con Mascota
+    public function mascotas()
+    {
+        return $this->hasMany(Mascota::class);
     }
 }
