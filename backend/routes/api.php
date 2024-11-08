@@ -30,6 +30,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/mascotas-update/{id}', [MascotaController::class, 'update']);
     Route::delete('/mascotas-delete/{id}', [MascotaController::class, 'destroy']);
     Route::get('/pdf/mascotas', [MascotaController::class, 'generarPdfMascotas']);
+    Route::get('/excel/mascotas', [MascotaController::class, 'generarExcelMascotas'])->name('exportar.mascotas');
 
     // Rutas para historias clinicas
     Route::get('/historias', [HistoriasController::class, 'index']);

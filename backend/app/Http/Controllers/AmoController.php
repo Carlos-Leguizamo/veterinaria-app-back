@@ -276,10 +276,10 @@ class AmoController extends Controller
 
         // Configura la respuesta para descargar el archivo
         $filename = 'reporte_amos.xlsx';
-        ob_start(); // Inicia el almacenamiento en búfer
-        $writer->save('php://output'); // Guarda el archivo en la salida estándar
-        $excelFile = ob_get_contents(); // Obtiene el contenido del búfer
-        ob_end_clean(); // Limpia el búfer
+        ob_start();
+        $writer->save('php://output');
+        $excelFile = ob_get_contents();
+        ob_end_clean();
 
         return response()->stream(function () use ($excelFile) {
             echo $excelFile;
