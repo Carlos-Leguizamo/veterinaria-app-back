@@ -24,4 +24,10 @@ class Mascota extends Model
     public function amo() {
         return $this->belongsTo(Amo::class);
     }
+
+    public function historias()
+{
+    return $this->hasMany(Historia::class);
+}
+
 }

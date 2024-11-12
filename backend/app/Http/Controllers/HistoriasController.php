@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\models\Historia;
 use Illuminate\Support\Facades\Validator;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Auth;
 
 class HistoriasController extends Controller
 {
@@ -12,7 +14,7 @@ class HistoriasController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'mascotas_id' => 'required|exists:mascotas,id',
-            'veterinarios_id' => 'required|exists:mascotas,id',
+            'veterinarios_id' => 'required|exists:veterinarios,id',
             'fecha_consulta' => 'required|date',
             'diagnostico' => 'required|string',
             'tratamiento' => 'required|string',
@@ -40,7 +42,7 @@ class HistoriasController extends Controller
     }
     public function index()
     {
-        $historias = Historia::all();
+        $historias = Historia::with(['mascota', 'veterinario'])->get();
 
         return response()->json([
             'success' => true,
@@ -48,6 +50,7 @@ class HistoriasController extends Controller
             'data' => $historias,
         ], 200);
     }
+
 
     public function show($id)
     {
@@ -69,7 +72,7 @@ class HistoriasController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'mascotas_id' => 'required|exists:mascotas,id',
-            'veterinarios_id' => 'required|exists:mascotas,id',
+            'veterinarios_id' => 'required|exists:veterinarios,id',
             'fecha_consulta' => 'required|date',
             'diagnostico' => 'required|string',
             'tratamiento' => 'required|string',
@@ -116,5 +119,14 @@ class HistoriasController extends Controller
             'success' => true,
             'message' => 'Historia eliminada correctamente',
         ], 200);
+    }
+
+
+    public function generarPdfHistorias()
+    {
+        $veterinario = Auth::user();
+        $historias = $veterinario->historias;
+        $pdf = PDF::loadView('reportes.historias', compact('historias', 'veterinario'));
+        return $pdf->stream('reporte_historias.pdf');
     }
 }

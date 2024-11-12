@@ -16,6 +16,10 @@ class Veterinario extends Model
 
     public function amos()
     {
-        return $this->belongsToMany(Amo::class, 'amo_veterinario', 'veterinarios_id', 'amos_id') -> withTimestamps();
+        return $this->belongsToMany(Amo::class, 'amo_veterinario', 'veterinarios_id', 'amos_id')->withTimestamps();
+    }
+    public function historias()
+    {
+        return $this->hasMany(Historia::class, 'veterinarios_id');
     }
 }

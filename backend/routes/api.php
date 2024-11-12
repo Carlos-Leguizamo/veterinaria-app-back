@@ -14,6 +14,8 @@ Route::post('/veterinario/register', [VeterinarioController::class, 'register'])
 
 Route::middleware('auth:sanctum')->group(function () {
 
+    route::get('veterinario-auth', [VeterinarioController::class, 'me']);
+
     // Rutas para gestionar Amos
     Route::post('/amos-store', [AmoController::class, 'registro']);
     Route::get('/amos', [AmoController::class, 'index']);
@@ -36,8 +38,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/historias', [HistoriasController::class, 'index']);
     Route::post('/historias-store', [HistoriasController::class, 'store']);
     Route::get('/historias/{id}', [HistoriasController::class, 'show']);
-    Route::put('/historias/{id}', [HistoriasController::class, 'update']);
-    Route::delete('/historias/{id}', [HistoriasController::class, 'destroy']);
+    Route::put('/historias-update/{id}', [HistoriasController::class, 'update']);
+    Route::delete('/historias-delete/{id}', [HistoriasController::class, 'destroy']);
+    Route::get('/pdf/historias', [HistoriasController::class, 'generarPdfHistorias']);
 
     // Rutas para consultas
     Route::get('/consultas', [ConsultasController::class, 'index']);
