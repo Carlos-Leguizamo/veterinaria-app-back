@@ -148,7 +148,7 @@ class MascotaController extends Controller
         $sheet->getStyle('A1')->getFont()->setSize(16)->setBold(true)->getColor()->setRGB('4CAF50');
         $sheet->getStyle('A1')->getAlignment()->setHorizontal('center');
 
-        // Información del veterinario
+
         $sheet->setCellValue('A2', 'Veterinario: ' . $veterinario->first_name . ' ' . $veterinario->last_name);
         $sheet->mergeCells('A2:H2');
         $sheet->getStyle('A2')->getAlignment()->setHorizontal('center');
@@ -165,7 +165,6 @@ class MascotaController extends Controller
         // Agrega los datos de los amos y sus mascotas
         $row = 5;
         foreach ($amos as $amo) {
-            // Datos del amo (colocamos los datos básicos una sola vez por amo)
             $sheet->setCellValue('A' . $row, $amo->first_name . ' ' . $amo->second_name . ' ' . $amo->last_name . ' ' . $amo->second_last_name);
             $sheet->setCellValue('B' . $row, $amo->email);
             $sheet->setCellValue('C' . $row, $amo->tipo_identidad);
@@ -201,7 +200,6 @@ class MascotaController extends Controller
             }
         }
 
-        // Ajusta el ancho de las columnas automáticamente
         foreach (range('A', 'J') as $columnID) {
             $sheet->getColumnDimension($columnID)->setAutoSize(true);
         }

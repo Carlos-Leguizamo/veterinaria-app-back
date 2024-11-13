@@ -7,6 +7,11 @@ use App\models\Historia;
 use Illuminate\Support\Facades\Validator;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Auth;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\Style\Color;
+use PhpOffice\PhpSpreadsheet\Style\Border;
 
 class HistoriasController extends Controller
 {
@@ -128,5 +133,67 @@ class HistoriasController extends Controller
         $historias = $veterinario->historias;
         $pdf = PDF::loadView('reportes.historias', compact('historias', 'veterinario'));
         return $pdf->stream('reporte_historias.pdf');
+    }
+
+    public function generarExcelHistorias()
+    {
+        $veterinario = Auth::user();
+        $historias = $veterinario->historias()->with('mascota')->get();
+
+        // Crear el archivo Excel
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        $sheet->setCellValue('A1', 'Reporte de Historias Clínicas');
+        $sheet->mergeCells('A1:E1');
+        $sheet->getStyle('A1')->getFont()->setSize(16)->setBold(true)->getColor()->setRGB('4CAF50');
+        $sheet->getStyle('A1')->getAlignment()->setHorizontal('center');
+
+        $sheet->setCellValue('A2', 'Veterinario: ' . $veterinario->first_name . ' ' . $veterinario->last_name);
+        $sheet->mergeCells('A2:E2');
+        $sheet->getStyle('A2')->getFont()->setSize(11);
+        $sheet->getStyle('A2')->getAlignment()->setHorizontal('center');
+
+        $header = ["Nombre de la Mascota", "Fecha de Consulta", "Diagnóstico", "Tratamiento"];
+        $sheet->fromArray($header, null, 'A3');
+        $sheet->getStyle('A3:D3')->getFont()->setBold(true)->getColor()->setRGB('FFFFFF');
+        $sheet->getStyle('A3:D3')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB('4CAF50');
+        $sheet->getStyle('A3:D3')->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
+
+        // Agregar los datos de las historias clínicas
+        $row = 4;
+        foreach ($historias as $historia) {
+            $sheet->setCellValue('A' . $row, $historia->mascota->nombre);
+            $sheet->setCellValue('B' . $row, $historia->fecha_consulta);
+            $sheet->setCellValue('C' . $row, $historia->diagnostico);
+            $sheet->setCellValue('D' . $row, $historia->tratamiento);
+
+
+            $sheet->getStyle('A' . $row . ':D' . $row)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
+            $sheet->getStyle('A' . $row . ':D' . $row)->getFont()->setColor(new Color(Color::COLOR_DARKGREEN));
+
+            if ($row % 2 == 0) {
+                $sheet->getStyle('A' . $row . ':D' . $row)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB('F9F9F9');
+            }
+
+            $row++;
+        }
+
+        foreach (range('A', 'D') as $columnID) {
+            $sheet->getColumnDimension($columnID)->setAutoSize(true);
+        }
+
+        $writer = new Xlsx($spreadsheet);
+        $filename = 'reporte_historias_clinicas_' . date('Y_m_d') . '.xlsx';
+
+        ob_start();
+        $writer->save('php://output');
+        $excelFile = ob_get_contents();
+        ob_end_clean();
+
+        return response($excelFile, 200, [
+            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+        ]);
     }
 }

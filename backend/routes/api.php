@@ -41,7 +41,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/historias-update/{id}', [HistoriasController::class, 'update']);
     Route::delete('/historias-delete/{id}', [HistoriasController::class, 'destroy']);
     Route::get('/pdf/historias', [HistoriasController::class, 'generarPdfHistorias']);
-
+    Route::get('/excel/historias', [HistoriasController::class, 'generarExcelHistorias']);
     // Rutas para consultas
     Route::get('/consultas', [ConsultasController::class, 'index']);
     Route::post('/consultas-store', [ConsultasController::class, 'store']);
