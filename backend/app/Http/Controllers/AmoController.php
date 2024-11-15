@@ -17,7 +17,6 @@ use PhpOffice\PhpSpreadsheet\Style\Alignment;
 
 class AmoController extends Controller
 {
-    // Método para registrar un nuevo Amo
     public function registro(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -55,7 +54,6 @@ class AmoController extends Controller
 
         $veterinario->amos()->attach($amo->id);
 
-        // Crear y retornar el token
         $token = $amo->createToken('Token')->plainTextToken;
 
         return response()->json([
@@ -66,20 +64,17 @@ class AmoController extends Controller
         ], 201);
     }
 
-    // Método para obtener todos los Amos
 
     public function index(): JsonResponse
     {
 
         $veterinario = Auth::user();
 
-        // Verificar si hay un veterinario autenticado
         if (!$veterinario) {
             return response()->json(['error' => 'Veterinario no autenticado'], 401);
         }
 
-        // Obtener los amos relacionados con el veterinario autenticado
-        $amos = $veterinario->amos()->withTimestamps()->get(); // Esto usa la relación definida en el modelo Veterinario
+        $amos = $veterinario->amos()->withTimestamps()->get();
 
         return response()->json([
             'success' => true,
@@ -103,7 +98,6 @@ class AmoController extends Controller
         ], 200);
     }
 
-    // Método para actualizar un Amo
     public function update(Request $request, $id)
     {
         $amo = Amo::find($id);
@@ -154,7 +148,6 @@ class AmoController extends Controller
         ], 200);
     }
 
-    // Método para eliminar un Amo
     public function destroy($id)
     {
         $amo = Amo::find($id);
@@ -271,10 +264,8 @@ class AmoController extends Controller
             $sheet->getColumnDimension($columnID)->setAutoSize(true);
         }
 
-        // Crea un objeto Writer y guarda en memoria
         $writer = new Xlsx($spreadsheet);
 
-        // Configura la respuesta para descargar el archivo
         $filename = 'reporte_amos.xlsx';
         ob_start();
         $writer->save('php://output');
@@ -286,6 +277,16 @@ class AmoController extends Controller
         }, 200, [
             'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
             'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+        ]);
+    }
+
+    public function countAmos()
+    {
+        $veterinario = Auth::user();
+        $count = $veterinario->amos()->count();
+        return response()->json([
+            'success' => true,
+            'count' => $count,
         ]);
     }
 }

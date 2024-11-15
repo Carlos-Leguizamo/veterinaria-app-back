@@ -55,7 +55,6 @@ class VeterinarioController extends Controller
 
     public function login(Request $request)
     {
-        // Validar los datos de entrada
         $validator = Validator::make($request->all(), [
             'email' => 'required|string|email|max:255',
             'password' => 'required|string',
@@ -80,8 +79,6 @@ class VeterinarioController extends Controller
             'token' => $token
         ]);
     }
-
-    // Método para obtener información del veterinario autenticado
     public function me(Request $request)
     {
         return response()->json($request->user());
@@ -89,8 +86,6 @@ class VeterinarioController extends Controller
     public function logout(Request $request)
     {
         $request->user()->tokens()->delete();
-
-        // Retornar respuesta exitosa
         return response()->json([
             'success' => true,
             'message' => 'Sesión cerrada correctamente'

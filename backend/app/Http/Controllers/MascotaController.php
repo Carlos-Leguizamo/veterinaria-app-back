@@ -8,16 +8,13 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use Barryvdh\DomPDF\Facade\Pdf;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
-// use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Style\Color;
 use PhpOffice\PhpSpreadsheet\Style\Border;
-// use Illuminate\Support\Facades\Auth;
 
 class MascotaController extends Controller
 {
-    // Método para registrar una nueva mascota
     public function store(Request $request)
     {
 
@@ -35,7 +32,6 @@ class MascotaController extends Controller
             return response()->json($validator->errors(), 422);
         }
 
-        // Crear una nueva mascota
         $mascota = Mascota::create($request->all());
 
         return response()->json([
@@ -48,9 +44,8 @@ class MascotaController extends Controller
     // Método para obtener todas las mascotas
     public function index()
     {
-        $veterinario = Auth::user(); // O lo que uses para identificar al veterinario
+        $veterinario = Auth::user();
 
-        // Obtener todos los amos creados por este veterinario
         $amos = $veterinario->amos;
 
         // Obtener todas las mascotas de los amos
@@ -66,7 +61,6 @@ class MascotaController extends Controller
         ]);
     }
 
-    // Método para obtener una mascota por su ID
     public function show($id)
     {
         $mascota = Mascota::find($id);
@@ -215,6 +209,17 @@ class MascotaController extends Controller
         return response($excelFile, 200, [
             'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
             'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+        ]);
+    }
+
+    public function countMascotas()
+    {
+        $veterinario = Auth::user();
+        // Contar las mascotas asociadas a los amos del veterinario logueado
+        $count = $veterinario->amos()->with('mascotas')->get()->pluck('mascotas')->flatten()->count();
+        return response()->json([
+            'success' => true,
+            'count' => $count,
         ]);
     }
 }

@@ -21,13 +21,18 @@ class Mascota extends Model
     ];
 
     // Definimos la relación con el modelo Amo
-    public function amo() {
+    public function amo()
+    {
         return $this->belongsTo(Amo::class);
     }
 
     public function historias()
-{
-    return $this->hasMany(Historia::class);
-}
+    {
+        return $this->hasMany(Historia::class);
+    }
 
+    public function veterinario()
+    {
+        return $this->belongsTo(Veterinario::class);
+    }
 }

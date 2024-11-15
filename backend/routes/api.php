@@ -24,6 +24,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/amos-delete/{id}', [AmoController::class, 'destroy']);
     Route::get('/pdf/amos', [AmoController::class, 'generarPdfAmos']);
     Route::get('/excel/amos', [AmoController::class, 'generarExcelAmos'])->name('exportar.amos');
+    Route::get('/countAmos', [AmoController::class, 'countAmos']);
 
     // Rutas para gestionar mascotas
     Route::post('/mascotas-store', [MascotaController::class, 'store']);
@@ -33,6 +34,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/mascotas-delete/{id}', [MascotaController::class, 'destroy']);
     Route::get('/pdf/mascotas', [MascotaController::class, 'generarPdfMascotas']);
     Route::get('/excel/mascotas', [MascotaController::class, 'generarExcelMascotas'])->name('exportar.mascotas');
+    Route::get('/countMascotas', [MascotaController::class, 'countMascotas']);
 
     // Rutas para historias clinicas
     Route::get('/historias', [HistoriasController::class, 'index']);
@@ -42,12 +44,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/historias-delete/{id}', [HistoriasController::class, 'destroy']);
     Route::get('/pdf/historias', [HistoriasController::class, 'generarPdfHistorias']);
     Route::get('/excel/historias', [HistoriasController::class, 'generarExcelHistorias']);
-    // Rutas para consultas
-    Route::get('/consultas', [ConsultasController::class, 'index']);
-    Route::post('/consultas-store', [ConsultasController::class, 'store']);
-    Route::get('/consultas/{id}', [ConsultasController::class, 'show']);
-    Route::put('/consultas/{id}', [ConsultasController::class, 'update']);
-    Route::delete('/consultas/{id}', [ConsultasController::class, 'destroy']);
+    Route::get('/countHistorias', [HistoriasController::class, 'countHistorias']);
 });
 
 

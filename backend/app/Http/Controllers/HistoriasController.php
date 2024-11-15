@@ -196,4 +196,15 @@ class HistoriasController extends Controller
             'Content-Disposition' => 'attachment; filename="' . $filename . '"',
         ]);
     }
+
+
+    public function countHistorias()
+    {
+        $veterinario = Auth::user();
+        $count = $veterinario->historias()->count();
+        return response()->json([
+            'success' => true,
+            'count' => $count,
+        ]);
+    }
 }
