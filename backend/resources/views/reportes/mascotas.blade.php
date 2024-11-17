@@ -103,7 +103,7 @@
     <table>
         <thead>
             <tr>
-                <th>Nombre - Apellido</th>
+                <th>Nombre-Apellido</th>
                 <th>Email</th>
                 <th>Tipo de Identidad</th>
                 <th>Número de Identidad</th>
@@ -133,7 +133,7 @@
                     <th>Nombre de la Mascota</th>
                     <th>Especie</th>
                     <th>Raza</th>
-                    <th>Edad</th>
+                    <th>Fecha de Nacimiento</th>
                     <th>Peso</th>
                     <th>Amo de la Mascota</th>
                 </tr>
@@ -145,7 +145,7 @@
                     <td>{{ $mascota->nombre }}</td>
                     <td>{{ $mascota->especie }}</td>
                     <td>{{ $mascota->raza }}</td>
-                    <td>{{ $mascota->edad }} años</td>
+                    <td>{{ $mascota->fecha_nacimiento }}</td>
                     <td>{{ $mascota->peso }} Kg</td>
                     <td>{{ $amo->first_name }} {{ $amo->last_name }}</td>
                 </tr>

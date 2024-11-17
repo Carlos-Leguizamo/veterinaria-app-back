@@ -22,7 +22,6 @@ class MascotaController extends Controller
             'nombre' => 'required|string|max:255',
             'especie' => 'required|string|max:255',
             'raza' => 'nullable|string|max:255',
-            'edad' => 'required|integer|min:0',
             'peso' => 'nullable|numeric|min:0',
             'fecha_nacimiento' => 'required|date',
             'amo_id' => 'required|exists:amos,id',
@@ -86,7 +85,6 @@ class MascotaController extends Controller
             'nombre' => 'sometimes|required|string|max:255',
             'tipo' => 'sometimes|required|string|max:255',
             'raza' => 'sometimes|nullable|string|max:255',
-            'edad' => 'sometimes|required|integer|min:0',
             'peso' => 'sometimes|nullable|numeric|min:0',
             'amo_id' => 'sometimes|required|exists:amos,id',
         ]);
@@ -148,7 +146,7 @@ class MascotaController extends Controller
         $sheet->getStyle('A2')->getAlignment()->setHorizontal('center');
 
 
-        $header = ["Nombre - Apellido", "Email", "Tipo de Identidad", "Número de Identidad", "Teléfono", "Mascota", "Especie", "Raza", "Edad", "Peso"];
+        $header = ["Nombre - Apellido", "Email", "Tipo de Identidad", "Número de Identidad", "Teléfono", "Mascota", "Especie", "Raza", "Fecha de Nacimiento", "Peso"];
         $sheet->fromArray($header, null, 'A4');
 
 
@@ -171,7 +169,7 @@ class MascotaController extends Controller
                     $sheet->setCellValue('F' . $row, $mascota->nombre);
                     $sheet->setCellValue('G' . $row, $mascota->especie);
                     $sheet->setCellValue('H' . $row, $mascota->raza);
-                    $sheet->setCellValue('I' . $row, $mascota->edad);
+                    $sheet->setCellValue('I' . $row, $mascota->fecha_nacimiento);
                     $sheet->setCellValue('J' . $row, $mascota->peso . ' Kg');
 
                     // Estilos de la fila

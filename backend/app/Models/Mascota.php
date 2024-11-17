@@ -14,7 +14,6 @@ class Mascota extends Model
         'nombre',
         'especie',
         'raza',
-        'edad',
         'peso',
         'fecha_nacimiento',
         'amo_id',
